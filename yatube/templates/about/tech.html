@@ -1,0 +1,22 @@
+{% extends "about/for_static.html" %}
+{% block title %}Технологии{% endblock %}
+{% block content_name %}
+  Технологии
+  <img src= "{{ MEDIA_URL }}python.jpg" alt="Иконка" height="150" width="150">
+{% endblock %}
+{% block content_about_short %}
+  "Этот сайт создан в процессе обучения по курсу Python+ в Яндекс Практикуме"
+{% endblock %}
+{% block content_about_full %}
+  <p>Для создания данного сайта были использованы:</p>
+  <p>
+    1)Ноутбук фирмы ASUS<br>
+    2)Стол и стул<br>
+    3)Кофемашина и большое количество капсул
+  </p>
+  <p>
+    Это основное, что было использовано!<br>
+    Так же ещё был немного использован Python 3.7.9<br>
+    И совсем чуть чуть Django 2.2.9
+  </p>
+{% endblock %}

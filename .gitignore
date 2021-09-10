@@ -26,6 +26,10 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+static/
+static_root/
+HW05_FINAL/tests/
+media/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
