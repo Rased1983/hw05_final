@@ -263,9 +263,12 @@ class FollowingTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.author = User.objects.create_user(username='Mr.X')
+        follower_1 = User.objects.create_user(username='Mr.Y')
+        cls.authorized_client_1 = Client()
+        cls.authorized_client_1.force_login(follower_1)
 
     def test_create_follow_not_authorized(self):
-        """Проверка попытки создания подписки."""
+        """Проверка попытки создания подписки гостем."""
         follow_count = Follow.objects.count()
         response = self.client.get(
             reverse('posts:profile_follow', kwargs={'username': self.author}),
@@ -279,11 +282,20 @@ class FollowingTests(TestCase):
             response, f'{rev_login}?next={rev_follow}'
         )
 
+    def test_create_follow_and_unfollow(self):
+        """Проверка создания подписки и отписки."""
+        follow_count = Follow.objects.count()
+        self.authorized_client_1.get(
+            reverse('posts:profile_follow', kwargs={'username': self.author}),
+        )
+        self.assertEqual(Follow.objects.count(), follow_count + 1)
+        self.authorized_client_1.get(reverse(
+            'posts:profile_unfollow', kwargs={'username': self.author}),
+        )
+        self.assertEqual(Follow.objects.count(), follow_count)
+
     def test_create_follow_index(self):
         """Проверка появления постов в ленте подписки."""
-        follower_1 = User.objects.create_user(username='Mr.Y')
-        authorized_client_1 = Client()
-        authorized_client_1.force_login(follower_1)
         follower_2 = User.objects.create_user(username='Mr.Z')
         authorized_client_2 = Client()
         authorized_client_2.force_login(follower_2)
@@ -291,10 +303,10 @@ class FollowingTests(TestCase):
             author=self.author,
             text='Тестовый текст для поста!',
         )
-        authorized_client_1.get(reverse(
+        self.authorized_client_1.get(reverse(
             'posts:profile_follow', kwargs={'username': self.author}),
         )
-        response = authorized_client_1.get(reverse('posts:follow_index'))
+        response = self.authorized_client_1.get(reverse('posts:follow_index'))
         objects = response.context['page_obj']
         self.assertIn(post, objects)
         response = authorized_client_2.get(reverse('posts:follow_index'))
