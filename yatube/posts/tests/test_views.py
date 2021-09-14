@@ -9,7 +9,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from posts.forms import PostForm
-from posts.models import Post, Group
+from posts.models import Follow, Group, Post
 
 User = get_user_model()
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -255,3 +255,48 @@ class PostCacheTests(TestCase):
         response = self.client.get(reverse('posts:index'))
         content_2 = response.content
         self.assertEqual(content_1, content_2)
+
+
+class FollowingTests(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.author = User.objects.create_user(username='Mr.X')
+
+    def test_create_follow_not_authorized(self):
+        """Проверка попытки создания подписки."""
+        follow_count = Follow.objects.count()
+        response = self.client.get(
+            reverse('posts:profile_follow', kwargs={'username': self.author}),
+        )
+        rev_login = reverse('users:login')
+        rev_follow = reverse(
+            'posts:profile_follow', kwargs={'username': self.author}
+        )
+        self.assertEqual(Follow.objects.count(), follow_count)
+        self.assertRedirects(
+            response, f'{rev_login}?next={rev_follow}'
+        )
+
+    def test_create_follow_index(self):
+        """Проверка появления постов в ленте подписки."""
+        follower_1 = User.objects.create_user(username='Mr.Y')
+        authorized_client_1 = Client()
+        authorized_client_1.force_login(follower_1)
+        follower_2 = User.objects.create_user(username='Mr.Z')
+        authorized_client_2 = Client()
+        authorized_client_2.force_login(follower_2)
+        post = Post.objects.create(
+            author=self.author,
+            text='Тестовый текст для поста!',
+        )
+        authorized_client_1.get(reverse(
+            'posts:profile_follow', kwargs={'username': self.author}),
+        )
+        response = authorized_client_1.get(reverse('posts:follow_index'))
+        objects = response.context['page_obj']
+        self.assertIn(post, objects)
+        response = authorized_client_2.get(reverse('posts:follow_index'))
+        objects = response.context['page_obj']
+        self.assertNotIn(post, objects)
