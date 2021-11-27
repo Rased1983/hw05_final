@@ -1,8 +1,9 @@
 {% extends "about/for_static.html" %}
 {% block title %}Об авторе проекта{% endblock %}
+{% load static %}
 {% block content_name %}
   Седенко Роман Андреевич
-  <img src= "{{ MEDIA_URL }}Self.jpg" alt="Моё фото" height="130" width="160">
+  <img src= "{% static 'img/Self.jpg' %}" alt="Моё фото" height="130" width="160">
 {% endblock %}
 {% block content_about_short %}
   Родился: 14.12.1983 <br>
@@ -17,7 +18,7 @@
     В учебе мне помогает мой котяра, который постоянно трется рядом и морально поддерживает :)
   </p>
   <p>Собственно вот он</p>
-  <img src= "{{ MEDIA_URL }}Cat.jpg" alt="Котяра" height="180" width="180"><hr>
+  <img src="{% static 'img/Cat.jpg' %}" alt="Котяра" height="180" width="180"><hr>
   <a href="https://github.com/Rased1983/" target="_blank">Моя страничка на GitHub</a><br>
   <a href="https://yandex-students.slack.com/team/U01UQR97291" target="_blank">Мой профиль в Slack</a><br>
 {% endblock %}

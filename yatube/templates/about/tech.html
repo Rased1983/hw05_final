@@ -1,8 +1,9 @@
 {% extends "about/for_static.html" %}
 {% block title %}Технологии{% endblock %}
+{% load static %}
 {% block content_name %}
   Технологии
-  <img src= "{{ MEDIA_URL }}python.jpg" alt="Иконка" height="150" width="150">
+  <img src= "{% static 'img/python.jpg' %}" alt="Иконка" height="150" width="150">
 {% endblock %}
 {% block content_about_short %}
   "Этот сайт создан в процессе обучения по курсу Python+ в Яндекс Практикуме"
